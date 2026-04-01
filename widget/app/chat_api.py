@@ -58,33 +58,30 @@ TOP_P = float(os.getenv("LLM_TOP_P", "0.95"))
 
 
 def _get_data_path() -> Path:
-    """Определяет путь к файлу с данными о товарах"""
-    env_path = os.getenv("CLEAN_DATA")
+    """Определяет путь к источнику данных о товарах."""
+    env_path = os.getenv("PRODUCTS_DB_PATH")
     if env_path:
         p = Path(env_path).expanduser()
         if p.exists():
             return p
-    
+
     # Проверяем относительные пути от корня проекта
-    csv_path = _PROJECT_ROOT / "back" / "database" / "products_clean.csv"
-    if csv_path.exists():
-        return csv_path
-    
-    xlsx_path = _PROJECT_ROOT / "back" / "database" / "products_clean.xlsx"
-    if xlsx_path.exists():
-        return xlsx_path
-    
-    # Альтернативные пути
-    alt_csv = Path("/mnt/data/products_clean.csv")
-    if alt_csv.exists():
-        return alt_csv
-    
-    alt_xlsx = Path("/mnt/data/products_clean.xlsx")
-    if alt_xlsx.exists():
-        return alt_xlsx
-    
-    # По умолчанию возвращаем CSV
-    return _PROJECT_ROOT / "back" / "database" / "products_clean.csv"
+    sqlite_paths = [
+        _PROJECT_ROOT / "back" / "database" / "products.db",
+        _PROJECT_ROOT / "back" / "database" / "products.sqlite3",
+        Path("/mnt/data/products.db"),
+        Path("/mnt/data/products.sqlite3"),
+    ]
+    for sqlite_path in sqlite_paths:
+        if sqlite_path.exists():
+            return sqlite_path
+
+    return _PROJECT_ROOT / "back" / "database" / "products.db"
+
+
+def _get_products_table_name() -> str:
+    """Возвращает имя таблицы с товарами в SQLite."""
+    return os.getenv("PRODUCTS_TABLE", "products")
 
 
 def _load_logs() -> Dict[str, Any]:
@@ -292,10 +289,11 @@ def _init_services():
     if not data_path.exists():
         raise FileNotFoundError(
             f"Файл с данными не найден: {data_path}. "
-            "Убедитесь, что файл products_clean.csv или products_clean.xlsx существует."
+            "Убедитесь, что SQLite база products.db доступна, "
+            "либо явно укажите PRODUCTS_DB_PATH."
         )
-    
-    _df = load_products(data_path)
+
+    _df = load_products(data_path, table_name=_get_products_table_name())
     
     if _df.empty:
         raise ValueError("Загруженный датасет пуст")

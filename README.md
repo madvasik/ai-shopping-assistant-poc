@@ -142,6 +142,10 @@ cp .env.example .env
 
 ```env
 OPENAI_API_KEY=your_openai_api_key_here
+# Необязательно: путь к SQLite-базе каталога
+# PRODUCTS_DB_PATH=back/database/products.db
+# Необязательно: имя таблицы с товарами
+# PRODUCTS_TABLE=products
 ```
 
 #### 2. Соберите и запустите контейнер

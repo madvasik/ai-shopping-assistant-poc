@@ -1,4 +1,6 @@
-from typing import List, Dict, Any, Optional
+from pathlib import Path
+from typing import List, Dict, Any
+import sqlite3
 import pandas as pd
 import numpy as np
 from rank_bm25 import BM25Okapi
@@ -17,18 +19,42 @@ def _tokenize(text: str) -> List[str]:
         return []
     text = str(text).lower()
     # Простая токенизация: разбиваем по пробелам и убираем пунктуацию
-    tokens = re.findall(r'\b\w+\b', text)
+    tokens = re.findall(r"\b\w+\b", text)
     return tokens
 
-def load_products(csv_path) -> pd.DataFrame:
-    """Загружает товары из CSV или XLSX файла"""
-    if str(csv_path).lower().endswith(".xlsx"):
-        df = pd.read_excel(csv_path)
-    else:
-        df = pd.read_csv(csv_path)
+def _load_products_from_sqlite(db_path: Path, table_name: str) -> pd.DataFrame:
+    """Загружает товары из SQLite-таблицы."""
+    if not re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*", table_name):
+        raise ValueError(f"Некорректное имя таблицы SQLite: {table_name}")
+
+    with sqlite3.connect(db_path) as conn:
+        tables = {
+            row[0]
+            for row in conn.execute(
+                "SELECT name FROM sqlite_master WHERE type='table'"
+            ).fetchall()
+        }
+        if table_name not in tables:
+            raise ValueError(
+                f"Таблица {table_name!r} не найдена в SQLite базе {db_path}"
+            )
+        return pd.read_sql_query(f"SELECT * FROM {table_name}", conn)
+
+def load_products(data_path, table_name: str = "products") -> pd.DataFrame:
+    """Загружает товары из SQLite-таблицы."""
+    path = Path(data_path)
+    suffix = path.suffix.lower()
+
+    if suffix not in {".db", ".sqlite", ".sqlite3"}:
+        raise ValueError(
+            f"Ожидалась SQLite база (.db/.sqlite/.sqlite3), получен файл: {path}"
+        )
+
+    df = _load_products_from_sqlite(path, table_name=table_name)
+
     df = _ensure_cols(df)
     df["price"] = pd.to_numeric(df["price"], errors="coerce")
-    
+
     # Формируем search_text из title + category + description
     if "search_text" not in df.columns or df["search_text"].isna().all():
         df["search_text"] = (
@@ -36,7 +62,7 @@ def load_products(csv_path) -> pd.DataFrame:
             df["category"].fillna("").astype(str) + " " +
             df["description"].fillna("").astype(str)
         )
-    
+
     df["title"] = df["title"].fillna("Item")
     return df
 

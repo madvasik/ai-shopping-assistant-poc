@@ -32,9 +32,8 @@ Thumbs.db
 # Streamlit
 .streamlit/
 
-# Data (опционально, раскомментируйте если не хотите коммитить данные)
-# database/*.xlsx
-# database/*.csv
+# Data (опционально, раскомментируйте если не хотите коммитить SQLite базу)
+# database/*.db
 
 # Logs
 *.log
