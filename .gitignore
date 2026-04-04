@@ -1,4 +1,5 @@
 # Python
+.pytest_cache/
 __pycache__/
 *.py[cod]
 *$py.class
@@ -12,6 +13,13 @@ back/venv/
 widget/.venv/
 dist/
 build/
+
+# Coverage (pytest-cov / coverage.py)
+.coverage
+.coverage.*
+htmlcov/
+coverage.xml
+*.cover
 
 # Environment variables
 .env
