@@ -53,3 +53,6 @@ combined_sources.txt
 
 # Local planning notes
 TODO.md
+
+# E2E generated reports
+tests/e2e/reports/
