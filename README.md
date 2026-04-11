@@ -46,6 +46,8 @@ AI-ассистент для подбора товаров из каталога
 
 Запросы к языковой модели выполняются через [OpenAI API](https://platform.openai.com/docs/api-reference/chat) (Chat Completions). Для запуска достаточно **`OPENAI_API_KEY`** в файле **`.env`** (шаблон — **`.env.example`**). Опционально: **`OPENAI_MODEL`** (по умолчанию в коде — `gpt-4o-mini`). Подробнее о переменных — `docs/specs/serving-config.md`, `docs/specs/tools-apis.md`.
 
+**VPN:** для работы приложения необходим VPN — используется OpenAI API.
+
 ---
 
 ## Edge cases на демо
@@ -68,6 +70,8 @@ AI-ассистент для подбора товаров из каталога
 ---
 
 ## Как запустить в Docker
+
+Для работы необходим **VPN** (см. раздел **LLM-провайдер**).
 
 1. В корне репозитория создайте `.env` с ключом OpenAI ([получить ключ](https://platform.openai.com/api-keys)):
 

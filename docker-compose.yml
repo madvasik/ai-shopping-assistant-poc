@@ -13,11 +13,14 @@ services:
       - .env
     environment:
       - OPENAI_API_KEY=${OPENAI_API_KEY}
+      # Файл БД внутри смонтированной папки (если монтировать ./logs.db как файл,
+      # а на хосте его нет, Docker создаёт каталог — SQLite падает с unable to open database file)
+      - LOGS_DB_PATH=/app/logs_data/logs.db
     volumes:
       # Монтируем код для разработки (изменения применяются без пересборки)
       - ./back:/app/back
       - ./widget:/app/widget
       # Опционально: монтируем данные, если хотите обновлять их без пересборки
       - ./back/database:/app/back/database:ro
-      - ./logs.db:/app/logs.db
+      - ./logs_data:/app/logs_data
     restart: unless-stopped

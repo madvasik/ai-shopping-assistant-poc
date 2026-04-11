@@ -34,7 +34,11 @@ MAX_NETWORK_ERRORS = 100
 
 def _get_conn(db_path: Path | None = None) -> sqlite3.Connection:
     """Возвращает (thread-local) соединение, создаёт БД при первом вызове."""
-    path = str(db_path or _DEFAULT_DB_PATH)
+    raw = db_path or _DEFAULT_DB_PATH
+    p = Path(raw)
+    if p.parent != Path("."):
+        p.parent.mkdir(parents=True, exist_ok=True)
+    path = str(p.resolve())
     conn: sqlite3.Connection | None = getattr(_local, "conn", None)
     conn_path: str | None = getattr(_local, "conn_path", None)
     if conn is not None and conn_path == path:

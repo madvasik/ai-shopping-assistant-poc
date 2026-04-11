@@ -46,6 +46,7 @@ Thumbs.db
 # Logs
 *.log
 logs.db
+logs_data/
 
 # Combined sources (may contain secrets)
 combined_sources.txt
