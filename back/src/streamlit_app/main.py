@@ -20,44 +20,6 @@ css_path = Path(__file__).parent / "assets" / "style.css"
 if css_path.exists():
     st.markdown('<style>' + css_path.read_text(encoding='utf-8') + '</style>', unsafe_allow_html=True)
 
-# Добавляем версию в левый верхний угол основного контента (fixed)
-st.markdown("""
-    <style>
-        .version-badge-fixed {
-            position: fixed !important;
-            top: 10px !important;
-            left: 10px !important;
-            background: rgba(37, 99, 235, 0.95) !important;
-            color: #ffffff !important;
-            padding: 8px 14px !important;
-            border-radius: 6px !important;
-            font-size: 13px !important;
-            font-weight: 700 !important;
-            z-index: 999999 !important;
-            border: 2px solid rgba(255, 255, 255, 0.3) !important;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
-            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2) !important;
-        }
-        @media (prefers-color-scheme: dark) {
-            .version-badge-fixed {
-                background: rgba(79, 124, 255, 0.95) !important;
-                color: #ffffff !important;
-                border-color: rgba(255, 255, 255, 0.4) !important;
-            }
-        }
-        /* Убеждаемся, что версия видна поверх всех элементов Streamlit */
-        header[data-testid="stHeader"] {
-            z-index: 999998 !important;
-        }
-        /* Убираем отступы у main блока, чтобы версия была видна */
-        .main .block-container {
-            padding-top: 50px !important;
-        }
-    </style>
-    <div class="version-badge-fixed">version 30.03.2026</div>
-""", unsafe_allow_html=True)
-
 
 # Заглушки — логирование происходит в widget/app/chat_api.py
 def _noop_counter(function_name="Unknown", prompt_preview=None, prompt_name=None):
